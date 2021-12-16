@@ -1,12 +1,12 @@
-# metabat, vamb, and AGE (Assembly Graph Embeddings) should already exist
-# (maybe write clusters to file)
+# metabat, vamb, and GraphMB outputs should already exist
 set -x
 # assembly dir
-#basedir=$1
-#basename=$2
 jobs=$1
 
-
+graphbin_path=""
+semibin_path=""
+gtdb_path="../SemiBin_GTDB/GTDB"
+TMPDIR="../temp/"
 #assembly_name="edges.fasta"
 #depth_name="edges_depth.txt"
 #bam_suffix="*edges.bam"
@@ -41,7 +41,7 @@ module load Miniconda3/4.9.2-foss-2020b
 set -x
 conda init bash
 eval "$(conda shell.bash hook)"
-conda activate /srv/MA/users/andrel/GraphBin/graphbin_env
+conda activate $graphbin_path
 #cd $1
 tr '\t' ',' < metabat.tsv > metabat.csv
 ../GraphBin/graphbin --assembler flye --graph $assembly_graph --contigs $assembly_name --binned metabat.csv --output graphbin_output/
@@ -66,20 +66,15 @@ cd maxbin_results/bins/; grep ">" *.fa | sed -e "s/bin\.//" -e "s/\.fa:>/ /" | a
 
 
 # run semibin
-#set +x
-#module load Miniconda3/4.9.2-foss-2020b
-#set -x
-#conda init bash
-#conda activate /srv/MA/users/andrel/semibin_env
-#SemiBin single_easy_bin -i polished.fasta -b *.bam  -o semibin_output  --recluster -r /srv/MA/users/andrel/SemiBin_GTDB/ --environment ocean
-#cd output_recluster_bins/; grep ">" *.fa | sed -e "s/bin\.//" -e "s/\.fa:>/ /" | awk '{ print $2 "\t" $1}' > ../../semibin.tsv; cd ..
-#python ../write_fasta_bins.py --contigs2bin semibin.tsv --assembly polished.fasta --outputdir semibin_bins/ --prefix semibin --filter 500000
+set +x
+module load Miniconda3/4.9.2-foss-2020b
+set -x
+conda init bash
+conda activate $semibin_path
+SemiBin single_easy_bin -i polished.fasta -b *.bam  -o semibin_output -t $jobs --recluster -r $gtdb_path --environment ocean
+cd semibin_output/output_recluster_bins/; grep ">" *.fa | sed -e "s/bin\.//" -e "s/\.fa:>/ /" | awk '{ print $2 "\t" $1}' > ../../semibin.tsv; cd ..
+python ../write_fasta_bins.py --contigs2bin semibin.tsv --assembly polished.fasta --outputdir semibin_bins/ --prefix semibin --filter 500000
 
-#metabinner
-#export metabinner_path=$(dirname $(which run_metabinner.sh))
-#python ../metabinner_env/bin/scripts/gen_kmer.py polished.fasta 0 4
-#cut -f1,4,6,8,10 polished_depth.txt > metabinner_cov.tsv 
-#run_metabinner.sh -a $(pwd)/polished.fasta -o $(pwd)/metabinner_out/ -d $(pwd)/metabinner_cov.tsv -k $(pwd)/kmer_4_f1000.csv
 
 # copy all bins to same dir
 mkdir all_bins/
@@ -90,7 +85,7 @@ cp graphbin_bins/* all_bins/
 
 set +x
 module load CheckM/1.1.2-foss-2018a-Python-3.6.4
-checkm lineage_wf -x fa -t $jobs --tmpdir $temp_dir --pplacer_threads 10 --reduced_tree --tab_table all_bins checkm -f checkm/checkm.tsv
+checkm lineage_wf -x fa -t $jobs --tmpdir $TMPDIR --pplacer_threads 10 --reduced_tree --tab_table all_bins checkm -f checkm/checkm.tsv
 
-
-#DAS_Tool -i metabat.tsv,vamb.tsv,graphbin.tsv,maxbin.tsv -l metabat,vamb,graphbin,graphemb -c $assembly_name -o dastool_out --search_engine diamond -t 20 --write_bins 1
+module load DAS_Tool/1.1.3-foss-2020b-R-4.0.3-Python-3.8.6
+DAS_Tool -i metabat.tsv,vamb.tsv,graphbin.tsv,maxbin.tsv -l metabat,vamb,graphbin,maxbin -c $assembly_name -o dastool_out --search_engine diamond -t 20 --write_bins 1

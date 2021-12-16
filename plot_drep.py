@@ -145,7 +145,7 @@ def read_checkm(checkm_file, min_comp=50, max_cont=10):
 
 
 def print_stats_table(bins_per_method, out=sys.stdout, max_cont=5):
-    rows = [100, 90, 80, 70, 60]
+    rows = [100, 90, 80, 70, 60, 50]
     bar_plot_data = []
     print()
     print("cont<{}".format(max_cont), file=out)
@@ -168,49 +168,6 @@ def print_stats_table(bins_per_method, out=sys.stdout, max_cont=5):
 
     print(tabulate(bar_plot_data, headers=list(bins_per_method.keys())), file=out)
     print("# bins (avg contamination)", file=out)
-
-
-def plot_bin_count_bars():
-    # Get some pastel shades for the colors
-    # colors = plt.cm.BuPu(np.linspace(0.8, 0.1, len(bar_plot_data)))
-    # breakpoint()
-    # n_rows = len(bar_plot_data)
-    # index = np.arange(len(bins_per_method)) + 0.3
-    # bar_width = 0.4
-    # Initialize the vertical-offset for the stacked bar chart.
-    # y_offset = np.zeros(len(bins_per_method))
-    # Plot bars and create text labels for the table
-    # cell_text = []
-    # for row in range(n_rows):
-    #   plt.bar(
-    #       index,
-    #       bar_plot_data[row],
-    #       bar_width,
-    #       bottom=y_offset,
-    #       color=colors[row],
-    #       label="{}-{}".format(rows[row], rows[row + 1]),
-    #       tick_label=list(bins_per_method.keys()),
-    #   )
-    #   y_offset = y_offset + bar_plot_data[row]
-    # cell_text.append(["%1.1f" % (x / 1000.0) for x in y_offset])
-    # Reverse colors and text labels to display the last value at the top.
-    # colors = colors[::-1]
-    # cell_text.reverse()
-
-    # Add a table at the bottom of the axes
-    # the_table = plt.table(cellText=cell_text, rowLabels=rows[1:], rowColours=colors, colLabels=checkm_logs, loc="bottom")
-
-    # Adjust layout to make room for the table:
-    # plt.subplots_adjust(left=0.2, bottom=0.2)
-
-    # values = [20, 40, 60, 80, 100, 120]
-    # plt.ylabel("Bins")
-    # plt.yticks(values, ["%d" % val for val in values])
-    # plt.xticks([])
-    # plt.title("Bins <5% contamination")
-    # plt.legend()
-    # plt.show()
-    pass
 
 
 def read_contig2bin(contig2bin_file):
@@ -439,8 +396,8 @@ def main():
 
     # plot_scatter(bins_per_method, args.methods, args.noplots)
     fout = open(args.basedir + "/hq_stats.tsv", "w")
-    print_stats_table(bins_per_method, max_cont=1)
-    print_stats_table(bins_per_method, max_cont=2)
+    # print_stats_table(bins_per_method, max_cont=1)
+    # print_stats_table(bins_per_method, max_cont=2)
     print_stats_table(bins_per_method, max_cont=5)
     print_stats_table(bins_per_method, max_cont=5, out=fout)
     print_stats_table(bins_per_method, max_cont=10)
