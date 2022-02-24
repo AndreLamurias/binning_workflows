@@ -88,4 +88,4 @@ module load CheckM/1.1.2-foss-2018a-Python-3.6.4
 checkm lineage_wf -x fa -t $jobs --tmpdir $TMPDIR --pplacer_threads 10 --reduced_tree --tab_table all_bins checkm -f checkm/checkm.tsv
 
 module load DAS_Tool/1.1.3-foss-2020b-R-4.0.3-Python-3.8.6
-DAS_Tool -i metabat.tsv,vamb.tsv,graphbin.tsv,maxbin.tsv -l metabat,vamb,graphbin,maxbin -c $assembly_name -o dastool_out --search_engine diamond -t 20 --write_bins 1
+DAS_Tool -i metabat.tsv,vamb.tsv,graphbin.tsv,maxbin.tsv -l metabat,vamb,graphbin,maxbin -c $assembly_name -o dastool_out --search_engine diamond -t 20 --write_bins 1 --db_directory $TMPDIR
