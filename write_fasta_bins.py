@@ -29,6 +29,8 @@ print("read contig2bin file")
 bin2contig = {}
 with open(args.contigs2bin, "r") as f:
     for line in f:
+        if line.startswith("@") or line.startswith("#"):
+            continue
         contig_name, bin_name = line.strip().split("\t")
         contig_name = contig_name.split(" ")[0]
         if bin_name not in bin2contig:
